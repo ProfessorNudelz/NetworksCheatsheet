@@ -1,0 +1,32 @@
+html * {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-align: justify;
+}
+
+h1, h2, h5, h6 {
+  margin-top: 35px;
+}
+
+pre {
+  font-family: 'Source Code Pro', monospace;
+  color: #ffffff;
+  background-color: #2d3436;
+  border-radius: 5px;
+  margin-top: 16px;
+  padding-top: 20px;
+}
+
+.prompt {
+  color: #f1c40f;
+  font-family: 'Source Code Pro', monospace;
+}
+
+.comment {
+  font-family: 'Source Code Pro', monospace;
+  color: #bdc3c7;
+  font-style: italic;
+}
+
+.subnetMask {
+  font-size: 8.5pt;
+}
