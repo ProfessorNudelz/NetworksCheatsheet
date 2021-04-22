@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet"> 
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+  <link href="./cheatsheet.css" rel="stylesheet">
+  <title>Networks and Switching Lab Journal</title>
+</head>
+<body>
+  <div class="container">
+    <h1>Networks and Switching Lab Journal</h1>
+    <hr />
+
+    <h2>Table of Contents:</h2>
+    <ol>
+      <li><a href="#vlsm-table">VLAM Quick Reference Table</a></li>
+      <li><a href="#check-equipment">Check if Equipment is not 'clean'</a></li>
+      <li><a href="#clean-equipment">To Clean Equipment</a></li>
+      <li><a href="#three-essential-commends">3 Essential Commands</a></li>
+      <li><a href="#global-configs">Global Config</a></li>
+      <li><a href="#config-files">Config Files</a></li>
+      <li><a href="#verify-connectivity">Verify Connectivity</a></li>
+      <li><a href="#disable-ethernet-interfaces">Disable Ethernet Interfaces</a></li>
+      <li><a href="#vlans">VLANs</a></li>
+      <li><a href="#change-management-vlan">Chanage Management VLAN</a></li>
+      <li><a href="#vlan-trunk">VLAN Trunking</a></li>
+      <li><a href="#switchport-port-security">Switchport Port-Security</a></li>
+      <li><a href="#ssh">SSH</a></li>
+      <li><a href="#default-gateway">Configure Default Gateway</a></li>
+      <li><a href="#loopback-int">Loopback Interface (Router)</a></li>
+      <li><a href="#router-on-a-stick">Router on a Stick</a></li>
+      <li><a href="#spanning-tree">Spanning Tree</a></li>
+      <li><a href="#"></a></li>
+    </ol>
+
+    <h2 id="vlsm-table">VLSM Quick Reference Table</h2>
+    <hr />
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Useable IPs</th>
+          <th scope="col">8190</th>
+          <th scope="col">4094</th>
+          <th scope="col">2046</th>
+          <th scope="col">1022</th>
+          <th scope="col">510</th>
+          <th scope="col">254</th>
+          <th scope="col">126</th>
+          <th scope="col">62</th>
+          <th scope="col">30</th>
+          <th scope="col">14</th>
+          <th scope="col">6</th>
+          <th scope="col">2</th>
+          <th scope="col">0</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">Total IPs</th>
+          <td>8192</td>
+          <td>4096</td>
+          <td>2048</td>
+          <td>1024</td>
+          <td>512</td>
+          <td>256</td>
+          <td>128</td>
+          <td>64</td>
+          <td>32</td>
+          <td>16</td>
+          <td>8</td>
+          <td>4</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <th scope="row">Add to get Broadcast Address</th>
+          <td>0.0.31.255</td>
+          <td>0.0.15.255</td>
+          <td>0.0.7.255</td>
+          <td>0.0.3.255</td>
+          <td>0.0.1.255</td>
+          <td>0.0.0.255</td>
+          <td>0.0.0.127</td>
+          <td>0.0.0.63</td>
+          <td>0.0.0.31</td>
+          <td>0.0.0.15</td>
+          <td>0.0.0.7</td>
+          <td>0.0.0.3</td>
+          <td>0.0.0.1</td>
+        </tr>
+        <tr>
+          <th scope="row">Add to get next Subnet</th>
+          <td>0.0.32.0</td>
+          <td>0.0.16.0</td>
+          <td>0.0.8.0</td>
+          <td>0.0.4.0</td>
+          <td>0.0.2.0</td>
+          <td>0.0.1.0</td>
+          <td>0.0.0.128</td>
+          <td>0.0.0.64</td>
+          <td>0.0.0.32</td>
+          <td>0.0.0.16</td>
+          <td>0.0.0.8</td>
+          <td>0.0.0.4</td>
+          <td>0.0.0.2</td>
+        </tr>
+        <tr>
+          <th scope="row">CIDR</th>
+          <td>/19</td>
+          <td>/20</td>
+          <td>/21</td>
+          <td>/22</td>
+          <td>/23</td>
+          <td>/24</td>
+          <td>/25</td>
+          <td>/26</td>
+          <td>/27</td>
+          <td>/28</td>
+          <td>/29</td>
+          <td>/30</td>
+          <td>/31</td>
+        </tr>
+        <tr>
+          <th scope="row">Subnet Mask</th>
+          <td class="subnetMask">255.255.224.0</td>
+          <td class="subnetMask">255.255.240.0</td>
+          <td class="subnetMask">255.255.248.0</td>
+          <td class="subnetMask">255.255.252.0</td>
+          <td class="subnetMask">255.255.254.0</td>
+          <td class="subnetMask">255.255.255.0</td>
+          <td class="subnetMask">255.255.255.128</td>
+          <td class="subnetMask">255.255.255.192</td>
+          <td class="subnetMask">255.255.255.224</td>
+          <td class="subnetMask">255.255.255.240</td>
+          <td class="subnetMask">255.255.255.248</td>
+          <td class="subnetMask">255.255.255.252</td>
+          <td class="subnetMask">255.255.255.254</td>
+        </tr>
+        <tr>
+          <th scope="row">Host Bits</th>
+          <td>13</td>
+          <td>12</td>
+          <td>11</td>
+          <td>10</td>
+          <td>9</td>
+          <td>8</td>
+          <td>7</td>
+          <td>6</td>
+          <td>5</td>
+          <td>4</td>
+          <td>3</td>
+          <td>2</td>
+          <td>1</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 id="check-equipment">Check if Equipment is not 'clean':</h2>
+    <hr />
+    <pre>
+      <span class="prompt">Switch#</span> show startup-config
+      <span class="prompt">Switch#</span> show flash:
+      <span class="prompt">Switch#</span> show vlan brief
+    </pre>
+
+    <h2 id="clean-equipment">To Clean Equipment:</h2>
+    <hr />
+    <pre>
+      <span class="prompt">Switch#</span> write erase
+      <span class="prompt">Switch#</span> delete vlan.dat
+      <span class="prompt">Switch#</span> reload
+    </pre>
+    
+    <h2 id="three-essential-commends">3 Essential Commands:</h2>
+    <hr />
+    <pre>
+      <span class="prompt">Switch(config)#</span> no ip domain lookup
+      <span class="prompt">Switch(config)#</span> line console 0
+      <span class="prompt">Switch(config-line)#</span> logging synchronous
+      <span class="prompt">Switch(config-line)#</span> exec-timetable 0 0
+    </pre>
+
+    <h2 id="global-configs">Global Config:</h2>
+    <hr />
+    <pre>
+      <span class="prompt">Switch(config)#</span> hostname <em>hostname</em>
+      <span class="prompt">Switch(config)#</span> no hostname
+      <span class="prompt">Switch(config)#</span> banner motd #<em>string</em>#
+    </pre>
+
+    <h2 id="config-files">Config Files:</h2>
+    <hr />
+    <pre>
+      <span class="prompt">Switch#</span> show startup-config
+      <span class="prompt">Switch#</span> show running-config
+      <span class="comment">Save running-config:</span>
+      <span class="prompt">Switch#</span> copy running-config startup-config
+      <span class="comment">Restore to startup-config:</span>
+      <span class="prompt">Switch#</span> reload 
+    </pre>
+
+    <h2 id="verify-connectivity">Verify Connectivity:</h2>
+    <hr />
+    <pre>
+      <span class="prompt">Switch#</span> show ip interface brief
+    </pre>
+
+    <h2 id="disable-ethernet-interfaces">Disable Ethernet Interfaces:</h2>
+    <hr />
+    <pre>
+      <span class="comment">Select a single interface:</span>
+      <span class="prompt">Switch(config)#</span> interface gigabitEthernet <em>1/0/1</em>
+      <span class="comment">Select a range of interfaces:</span>
+      <span class="prompt">Switch(config)#</span> interface range gigabitEthernet <em>1/0/1 - 14</em>
+      <span class="comment">Turn off interface:</span>
+      <span class="prompt">Switch(config-if)#</span> shutdown
+      <span class="comment">Turn on interface:</span>
+      <span class="prompt">Switch(config-if)#</span> no shutdown 
+    </pre>
+
+    <h2 id="vlans">VLANs:</h2>
+    <hr />
+    <pre>
+      <span class="comment">Create a VLAN:</span>
+      <span class="prompt">Switch(config)#</span> vlan <em>number</em>
+      <span class="prompt">Switch(config-vlan)#</span> name <em>name</em>
+      <span class="prompt">Switch(config-vlan)#</span> exit
+
+      <span class="comment">Configure membership of interfaces to the VLAN:</span>
+      <span class="prompt">Switch(config)#</span> interface range gigabitEthernet <em>1/0/1 - 14</em>
+      <span class="prompt">Switch(config-if)#</span> description <em>Users VLAN</em>
+      <span class="prompt">Switch(config-if)#</span> switchport mode access
+      <span class="prompt">Switch(config-if)#</span> switchport access vlan <em>10</em>
+      <span class="comment">To remove an interface from a vlan:</span>
+      <span class="prompt">Switch(config-if)#</span> no switchport access vlan
+
+      <span class="comment">Delete a VLAN:</span>
+      <span class="prompt">Switch(config)#</span> no vlan <em>10</em>
+
+      <span class="comment">Show VLAN information:</span>
+      <span class="prompt">Switch#</span> show vlan brief
+    </pre>
+
+    <h2 id="change-management-vlan">Change Management VLAN:</h2>
+    <hr />
+    <pre>
+      <span class="prompt">Switch(config)#</span> interface vlan 1
+      <span class="prompt">Switch(config-vlan)#</span> shutdown
+      <span class="prompt">Switch(config-vlan)#</span> exit
+      <span class="prompt">Switch(config)#</span> vlan 99
+      <span class="prompt">Switch(config-vlan)#</span> name <em>Management</em>
+      <span class="prompt">Switch(config-vlan)#</span> exit
+      <span class="prompt">Switch(config)#</span> interface vlan 99
+      <span class="prompt">Switch(config-vlan)#</span> description Management
+      <span class="prompt">Switch(config-vlan)#</span> ip address <em>192.168.99.3 255.255.255.0</em>
+      <span class="prompt">Switch(config-vlan)#</span> no shutdown
+      <span class="prompt">Switch(config-vlan)#</span> exit
+    </pre>
+
+    <h2 id="vlan-trunk">VLAN Trunking:</h2>
+    <hr />
+    <pre>
+      <span class="prompt">Switch(config)#</span> interface gigabitEthernet <em>id</em>
+      <span class="prompt">Switch(config-if)#</span> switchport mode trunk
+
+      <span class="comment">Change native VLAN:</span>
+      <span class="prompt">Switch(config-if)#</span> switchport trunk native vlan <em>10</em>
+
+      <span class="comment">Specify list of VLANs allowed to be on trunk list:</span>
+      <span class="prompt">Switch(config-if)#</span> switchport trunk allowed vlan <em>10,20,30</em>
+      <span class="prompt">Switch(config-if)#</span> exit
+
+      <span class="comment">Show trunk ports:</span>
+      <span class="prompt">Switch#</span> show interfaces trunk
+    </pre>
+
+    <h2 id="switchport-port-security">Switchport Port-Security:</h2>
+    <hr />
+    <h4>Configure Port Security</h4>
+    <pre>
+      <span class="comment">Select interface:</span>
+      <span class="prompt">Switch(config)#</span> interface gigabitEthernet <em>id</em>
+
+      <span class="comment">Enable Port-Security (interface must be in access mode first):</span>
+      <span class="prompt">Switch(config-if)#</span> switchport port-security
+
+      <span class="comment">Configure maximum allowed MAC Addresses:</span>
+      <span class="prompt">Switch(config-if)#</span> switchport port-security maximum <em>N</em>
+
+      <span class="comment">Shutdown port upon breach:</span>
+      <span class="prompt">Switch(config-if)#</span> switchport port-security violation shutdown
+      <span class="comment">To re-enable port, <em>shutdown</em> and then <em>no shutdown</em> port</span>
+
+      <span class="comment">Drop packets from unknown source:</span>
+      <span class="prompt">Switch(config-if)#</span> switchport port-security violation restrict
+
+      <span class="comment">Sticky MAC Addresses (can't be changed):</span>
+      <span class="prompt">Switch(config-if)#</span> switchport port-security mac-address sticky
+      <span class="prompt">Switch(config-if)#</span> no switchport port-security mac-address sticky
+
+      <span class="comment">Allocate a specific MAC Address:</span>
+      <span class="prompt">Switch(config-if)#</span> switchport port-security mac-address <em>XXXX.XXXX.XXXX.XXXX</em>
+    </pre>
+
+    <h4>Explore Port Security</h4>
+    <pre>
+      <span class="prompt">Switch#</span> show mac address-table
+      <span class="prompt">Switch#</span> show port-security
+      <span class="prompt">Switch#</span> show port-security interface gigabitEthernet <em>1/0/1</em>
+      <span class="prompt">Switch#</span> show port-security address
+      <span class="prompt">Switch#</span> show interface gigabitEthernet <em>1/0/1</em>
+    </pre>
+
+    <h2 id="ssh">SSH</h2>
+    <hr />
+    <pre>
+      <span class="comment">Verify SSH support:</span>
+      <span class="prompt">Switch#</span> show ip ssh
+      
+      <span class="comment">Configure domain name:</span>
+      <span class="prompt">Switch(config)#</span> ip domain-name <em>cisco.com</em>
+      
+      <span class="comment">Generate RSA key-pairs:</span>
+      <span class="prompt">Switch(config)#</span>cyrpto key generate rsa 
+      
+      <span class="comment">Configure user authentication:</span>
+      <span class="prompt">Switch(config)#</span> username <em>admin</em> secret <em>ccna</em>
+
+      <span class="comment">Configure vty lines:</span>
+      <span class="comment">For Switch:</span>
+      <span class="prompt">Switch(config)#</span> line vty 0 15
+      <span class="comment">For Router:</span>
+      <span class="prompt">Router(config)#</span> line vty 0 4
+      
+      <span class="prompt">Switch(config-line)#</span> transport input ssh
+      <span class="prompt">Switch(config-line)#</span> login local
+      <span class="prompt">Switch(config-line)#</span> exit
+      
+      <span class="comment">Enable SSH version 2:</span>
+      <span class="prompt">Switch(config)#</span> ip ssh version 2 
+    </pre>
+
+    <h2 id="default-gateway">Configure Default Gateway</h2>
+    <hr />
+    <pre>
+      <span class="prompt">Switch(config)#</span> ip default-gateway <em>192.168.0.1</em>
+    </pre>
+
+    <h2 id="loopback-int">Loopback Interface (Router)</h2>
+    <hr />
+    <pre>
+      <span class="prompt">Router(config)#</span> interface lo0
+      <span class="prompt">Router(config-if)#</span> description <em>Loopback test interface</em>
+      <span class="prompt">Router(config-if)#</span> ip address <em>209.165.200.225 255.255.255.224</em>
+      <span class="prompt">Router(config-if)#</span> exit
+    </pre>
+
+    <h2 id="router-on-a-stick">Router on a Stick</h2>
+    <hr />
+    <pre>
+      <span class="comment">Enable the Physical Interface:</span>
+      <span class="prompt">Router(config)#</span> interface <em>g0/0/1</em>
+      <span class="prompt">Router(config-if)#</span> no shutdown
+      <span class="prompt">Router(config-if)#</span> exit
+
+      <span class="comment">Create the sub-interface:</span>
+      <span class="prompt">Router(config)#</span> interface <em>g0/0/1.99</em>
+      <span class="prompt">Router(config-subif)#</span> description <em>Connection to management VLAN</em>
+      <span class="prompt">Router(config-subif)#</span> encapsulation dot1Q <em>99</em>
+      <span class="prompt">Router(config-subif)#</span> ip address <em>192.168.1.1 255.255.255.0</em>
+      <span class="prompt">Router(config-subif)#</span> exit
+
+      <span class="comment">To show routing table:</span>
+      <span class="prompt">Router#</span> show ip route
+    </pre>
+
+    <h2 id="spanning-tree">Spanning Tree</h2>
+    <hr />
+    <pre>
+      <span class="comment">Show current spanning tree configuration:</span>
+      <span class="prompt">Switch#</span> show spanning-tree
+
+      <span class="comment">Change Port Cost:</span>
+      <span class="prompt">Switch(config)#</span> interface <em>g1/0/1</em>
+      <span class="prompt">Switch(config-if)#</span> spanning-tree cost <em>18</em>
+      <span class="comment">To undo port cost change:</span>
+      <span class="prompt">Switch(config-if)#</span> no spanning-tree cost <em>18</em>
+    </pre>
+  </div>
+</body>
+</html>
