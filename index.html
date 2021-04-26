@@ -234,6 +234,7 @@
       <span class="prompt">Switch(config-if)#</span> description <em>Users VLAN</em>
       <span class="prompt">Switch(config-if)#</span> switchport mode access
       <span class="prompt">Switch(config-if)#</span> switchport access vlan <em>10</em>
+      <span class="prompt">Switch(config-if)#</span> no shutdown
       <span class="comment">To remove an interface from a vlan:</span>
       <span class="prompt">Switch(config-if)#</span> no switchport access vlan
 
@@ -275,6 +276,11 @@
 
       <span class="comment">Show trunk ports:</span>
       <span class="prompt">Switch#</span> show interfaces trunk
+
+      <span class="comment">When using 3650 switches in Packet Tracer or ATC330, use:</span>
+      <span class="prompt">Switch(config-if)#</span> switchport trunk encapsulation dot1q
+      <span class="comment"><strong>BEFORE:</strong></span>
+      <span class="prompt">Switch(config-if)#</span> switchport mode trunk
     </pre>
 
     <h2 id="switchport-port-security">Switchport Port-Security:</h2>
@@ -355,6 +361,7 @@
       <span class="prompt">Router(config)#</span> interface lo0
       <span class="prompt">Router(config-if)#</span> description <em>Loopback test interface</em>
       <span class="prompt">Router(config-if)#</span> ip address <em>209.165.200.225 255.255.255.224</em>
+      <span class="prompt">Router(config-if)#</span> no shutdown
       <span class="prompt">Router(config-if)#</span> exit
     </pre>
 
@@ -371,10 +378,13 @@
       <span class="prompt">Router(config-subif)#</span> description <em>Connection to management VLAN</em>
       <span class="prompt">Router(config-subif)#</span> encapsulation dot1Q <em>99</em>
       <span class="prompt">Router(config-subif)#</span> ip address <em>192.168.1.1 255.255.255.0</em>
+      <span class="prompt">Router(config-subif)#</span> no shutdown
       <span class="prompt">Router(config-subif)#</span> exit
 
       <span class="comment">To show routing table:</span>
       <span class="prompt">Router#</span> show ip route
+
+      <span class="comment">Ports on switch to router must be in <strong>trunk</strong> mode</span>
     </pre>
 
     <h2 id="spanning-tree">Spanning Tree</h2>
