@@ -34,7 +34,9 @@
       <li><a href="#loopback-int">Loopback Interface (Router)</a></li>
       <li><a href="#router-on-a-stick">Router on a Stick</a></li>
       <li><a href="#spanning-tree">Spanning Tree</a></li>
-      <li><a href="#"></a></li>
+      <li><a href="#etherchannel">Ethernchannel</a></li>
+      <li><a href="#configroutingprotocol">Configure Routing Protocol</a></li>
+      <li><a href="#acl">Access Control Lists (ACL)</a></li>
     </ol>
 
     <h2 id="vlsm-table">VLSM Quick Reference Table</h2>
@@ -277,7 +279,7 @@
       <span class="comment">Show trunk ports:</span>
       <span class="prompt">Switch#</span> show interfaces trunk
 
-      <span class="comment">When using 3650 switches in Packet Tracer or ATC330, use:</span>
+      <span class="comment">When using 3650 or 3560 switches in Packet Tracer or ATC330, use:</span>
       <span class="prompt">Switch(config-if)#</span> switchport trunk encapsulation dot1q
       <span class="comment"><strong>BEFORE:</strong></span>
       <span class="prompt">Switch(config-if)#</span> switchport mode trunk
@@ -398,7 +400,183 @@
       <span class="prompt">Switch(config-if)#</span> spanning-tree cost <em>18</em>
       <span class="comment">To undo port cost change:</span>
       <span class="prompt">Switch(config-if)#</span> no spanning-tree cost <em>18</em>
+
+      <span class="comment">To manually configure root bridge:</span>
+      <span class="prompt">Switch(config)#</span> spanning-tree vlan <em>IDs</em> root <em>[primary/secondary...]</em>
+
+      <span class="comment">To change spanning-tree modes:</span>
+      <span class="prompt">Switch(config)#</span> spanning-tree mode <em>pvst</em>
+      <span class="prompt">Switch(config)#</span> spanning-tree mode <em>rapid-pvst</em>
+
+      <span class="comment">To watch spanning-tree events:</span>
+      <span class="prompt">Switch#</span> debug spanning-tree events
+      <span class="prompt">Switch#</span> no debug spanning-tree events
+
+      <span class="comment">To transition a port to forward state immediately:</span>
+      <span class="prompt">Switch(config)#</span> interface <em>g1/0/7</em>
+      <span class="prompt">Switch(config-if)#</span> spanning-tree portfast
+      <span class="prompt">Switch(config-if)#</span> spanning-tree bpduguard enable
     </pre>
+    <h4>Spanning Tree Algorithm</h4>
+    <hr />
+    <h5>1. Electing the Root Bridge</h5>
+    <ol>
+      <li>The root bridge is the switch with the lowest Bridge ID.</li>
+      <li>If all STP priorities are the same, the switch  with the lowest MAC address will have the lowest bridge ID.</li>
+    </ol>
+    
+    <h5>2. Root-Port Selection</h5>
+    <ol>
+      <li>All non-root bridges will have one - and only one - root port</li>
+      <li>The port with the lowest path cost to the root bridge will become the root port</li>
+      <li>If 2+ ports have the same path cost to the root: Lowest <strong>received</strong> BID wins  (i.e. the port connected to the bridge with the lowest BID)</li>
+      <li>If the 2+ ports are connected to the same bridge (i.e. equal <strong>received</strong> BID): Lowest <strong>received</strong> port priority wins (i.e. the port connected to the port with lowest priority at the other end)</li>
+      <li>If the 2+ ports are connected to ports with equal priority, the connected interface ID breaks the tie: Lowest <strong>received</strong> interface ID wins</li>
+    </ol>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Data Rate</th>
+          <th>STP Path Cost</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>4 Mbps</td>
+          <td>250</td>
+        </tr>
+        <tr>
+          <td>10 Mbps</td>
+          <td>100</td>
+        </tr>
+        <tr>
+          <td>16 Mbps</td>
+          <td>62</td>
+        </tr>
+        <tr>
+          <td>100 Mbps</td>
+          <td>19</td>
+        </tr>
+        <tr>
+          <td>1 Gbps</td>
+          <td>4</td>
+        </tr>
+        <tr>
+          <td>2 Gbps</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td>10 Gbps</td>
+          <td>2</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h5>3. Designated / Non-Designated Port Selection</h5>
+    <ol>
+      <li>All ports on the root bridge are Designated ports</li>
+      <li>There must be one designated port in a link. The other end is either a root, or a non-designated port</li>
+      <li>Which port in a link is the Designated port? The one on the switch with the lowest path cost to root bridge</li>
+      <li>If path cost is the same from both switches, the switch with the lowest BID holds the Designated port. </li>
+    </ol>
+
+    <h2 id="etherchannel">EtherChannel</h2>
+    <hr />
+    <a href="https://www.networkstraining.com/cisco-switch-etherchannel-configuration/">For more information</a>
+    <pre>
+      <span class="comment">IMPORTANT: REPEAT ON BOTH SWITCHES</span>
+
+      <span class="comment">To config LACP (IEEE):</span>
+      <span class="prompt">Switch(config)#</span> interface range <em>g1/0/7 - 10</em>
+      <span class="prompt">Switch(config-if)#</span> shutdown
+      <span class="prompt">Switch(config-if)#</span> switchport mode trunk
+      <span class="prompt">Switch(config-if)#</span> switchport trunk native vlan <em>id</em>
+      <span class="prompt">Switch(config-if)#</span> channel-group <em>id</em> mode <em>[active/passive]</em>
+      <span class="prompt">Switch(config-if)#</span> no shutdown
+
+      <span class="comment">To config PAgD (Cisco):</span>
+      <span class="prompt">Switch(config)#</span> interface range <em>g1/0/7 - 10</em>
+      <span class="prompt">Switch(config-if)#</span> shutdown
+      <span class="prompt">Switch(config-if)#</span> channel-group <em>id</em> mode <em>[auto/desirable]</em>
+      <span class="prompt">Switch(config-if)#</span> no shutdown
+      <span class="prompt">Switch(config-if)#</span> exit
+
+      <span class="prompt">Switch(config)#</span> interface port-channel <em>id</em>
+      <span class="prompt">Switch(config-if)#</span> switchport mode trunk
+      <span class="prompt">Switch(config-if)#</span> switchport trunk native vlan <em>id</em>
+
+      <span class="comment">To view EtherChannel configs:</span>
+      <span class="prompt">Switch#</span> show etherchannel summary
+      <span class="prompt">Switch#</span> show running-config interface <em>g1/0/7</em>
+      <span class="prompt">Switch#</span> show interfaces port-channel <em>id</em>
+      <span class="prompt">Switch#</span> show interfaces etherchannel
+      <span class="prompt">Switch#</span> show etherchannel <em>id</em> port-channel
+    </pre>
+
+    <h2 id="configroutingprotocol">Configure Routing Protocol</h2>
+    <hr />
+    <pre>
+      <span class="comment">Configure RIP v2:</span>
+      <span class="prompt">Router(config)#</span> router rip
+      <span class="prompt">Router(config)#</span> version 2
+      <span class="comment">Advertise the internal network:</span>
+      <span class="prompt">Router(config)#</span> network <em>NetworkIP</em>
+      <span class="comment">Do not send routing updates to VLAN subnets:</span>
+      <span class="prompt">Router(config)#</span> passive-interface <em>interface.vlan</em>
+
+
+      <span class="comment">Configure a static route:</span>
+      <span class="prompt">Router(config)#</span> ip route <em>IPAddress SubnetMask</em>
+      <span class="prompt">Router(config)#</span> router rip
+      <span class="prompt">Router(config)#</span> version 2
+      <span class="prompt">Router(config)#</span> network <em>NetworkIP</em>
+      <span class="prompt">Router(config)#</span> default-information originate
+    </pre>
+
+    <h2 id="acl">Access Control Lists (ACL)</h2>
+    <hr />
+    <pre>
+      <span class="comment">Create a ACL:</span>
+      <span class="prompt">Router(config)#</span> ip access-list <em>[extended|standard]</em> <em>name</em>
+
+      <span class="comment">Generic Command:</span>
+      <span class="prompt">Router(config)#</span> <em>[deny|permit] [ip|icmp|tcp|udp] SourceIp SourceWildcard [operator operand] DestinationIP DestinationWildcard [operator operand]</em>
+
+      <span class="comment">Deny Traffic:</span>
+      <span class="prompt">Router(config)#</span> deny tcp <em>NetworkID InvertedSubnetMask</em> host <em>HostIP</em> eq <em>Port</em>
+      <span class="prompt">Router(config)#</span> deny ip <em>NetworkID InvertedSubnetMask</em> host <em>HostIP</em>
+
+      <span class="comment">Permit Traffic:</span>
+      <span class="prompt">Router(config)#</span> permit tcp <em>NetworkID InvertedSubnetMask</em> host <em>HostIP</em> eq <em>Port</em>
+      <span class="prompt">Router(config)#</span> permit ip any any
+
+      <span class="comment">Attach an ACL to a VLAN/Interface:</span>
+      <span class="prompt">Router(config)#</span> interface <em>G0/0/1.10</em>
+      <span class="prompt">Router(config)#</span> ip access-group <em>name</em> <em>[in|out]</em>
+
+      <span class="comment">View ACLs:</span>
+      <span class="prompt">Router(config)#</span> show access-lists
+      <span class="prompt">Router(config)#</span> show access-list <em>name</em>
+
+      <span class="comment">Rename a ACL:</span>
+      <span class="prompt">Router(config)#</span> access-list <em>name</em> rename <em>new_name</em>
+
+      <span class="comment">Delete a ACL:</span> 
+      <span class="prompt">Router(config)#</span> no ip access-list extended <em>name</em>
+    </pre>
+
+    <p>ACL names are case sensitive</p>
+    <p>When creating ACL rules, create the most specific rules first, all the way down to least specific (e.g. <em>deny ip all all</em> should be last)</p>
+    <p>ACLs should be placed as close as possible to the source host to block traffic, reducing congestion.</p>
+
+    <h4>Operator</h4>
+    <p>eq, neq - Port number equal or not equal specified</p>
+    <p>lt, gt - Port number less or greater then specified</p>
+
+    <h4>Operand</h4>
+    <p>Integer port number: 80, 443, 20, 23, 53, etc.</p>
+    <p>Text representation of service name: http, dns, ftp, ssh, telnet, etc.</p>
   </div>
 </body>
 </html>
